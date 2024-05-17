@@ -59,6 +59,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Builder.Default
     private List<Learner> learners= new ArrayList<>();
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()

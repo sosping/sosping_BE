@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import sosping.be.domain.fcm.service.NotificationService;
 import sosping.be.domain.help.dto.HelpMessage;
@@ -33,8 +32,8 @@ public class HelpService {
         LOGGER.info("[sendHelp] {}", nearbyDeviceIds);
 
         notificationService.sendHelpCallNotification(
-                "Help Needed",
-                "A member near you needs help.",
+                "구조 요청",
+                "주변에 위험에 빠진 사람이 존재해요. 위치를 확인해주세요",
                 nearbyDeviceIds,
                 latitude,
                 longitude
@@ -44,6 +43,7 @@ public class HelpService {
         HelpMessage helpMessage = new HelpMessage(latitude, longitude);
         messagingTemplate.convertAndSend("/topic/locations", helpMessage);
         LOGGER.info("[sendHelp] WebSocket message sent: {}", helpMessage);
+
     }
 
     @LogMonitoring
