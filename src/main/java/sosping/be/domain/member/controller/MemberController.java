@@ -38,4 +38,13 @@ public class MemberController {
         memberService.updateLocation(member, latitude, longitude);
         return ResponseEntity.ok(BasicResponse.of("SUCCESS"));
     }
+
+    @LogMonitoring
+    @Operation(summary = "경력 추가", description = "사용자의 경력을 추가합니다.")
+    @PostMapping("experience")
+    public ResponseEntity<BasicResponse> addExperience(@AuthenticationPrincipal Member member,
+                                                       @RequestParam String experience) {
+        memberService.addExperience(member, experience);
+        return ResponseEntity.ok(BasicResponse.of("SUCCESS"));
+    }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@ToString(exclude = {"lessons", "learners"})
+@ToString(exclude = {"lessons", "learners", "experiences"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -44,6 +44,10 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(name = "experience")
+    private List<String> experiences = new ArrayList<>();
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Lesson> lessons= new ArrayList<>();
 
@@ -56,6 +60,8 @@ public class Member extends BaseTimeEntity implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }
+
+
 
     public void updateLocation(Double latitude, Double longitude) {
         this.latitude = latitude;

@@ -27,6 +27,12 @@ public class MemberService {
     }
 
     @Transactional
+    public void addExperience(Member member, String experience) {
+        member.getExperiences().add(experience);
+        memberRepository.save(member);
+    }
+
+    @Transactional
     public String updateDeviceId(Member member, String deviceId) {
         member.updateDeviceId(deviceId);
         return memberRepository.save(member).getDeviceId();
