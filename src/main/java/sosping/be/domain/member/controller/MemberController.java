@@ -21,6 +21,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @LogMonitoring
+    @Operation(summary = "디바이스 아이디 갱신", description = "deviceId를 갱신합니다. path로")
     @PostMapping("{deviceId}")
     public ResponseEntity<String> updateDeviceId(@AuthenticationPrincipal Member member, @PathVariable String deviceId) {
         String response = memberService.updateDeviceId(member, deviceId);
