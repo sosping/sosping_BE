@@ -36,10 +36,13 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
+        LOGGER.info("Request URI: {}", path);
+        LOGGER.info("Ant Match URIs: {}", antMatchURIs);
 
         // 토큰 비검사 uri
         for (String antMatchURI : antMatchURIs) {
             if (path.startsWith(antMatchURI)) {
+                LOGGER.info("Matched ant URI: {}", antMatchURI);
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -48,7 +51,7 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
         String token = tokenProvider.resolveToken(request);
 
         String aud = tokenProvider.getAudience(token);
-        LOGGER.info("[] aud  {}", aud);
+        LOGGER.info("aud: {}", aud);
         if (aud == null || aud.isBlank()) {
             throw new BusinessException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
         }

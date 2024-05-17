@@ -36,9 +36,9 @@ public class TokenProvider {
         KEY = new SecretKeySpec(JWT_SECRET.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
 
         LOGGER.info("\n{}",generateAccessToken(Member.builder()
-                .memberId(0L)
-                .name("pol")
-                .email("kr.or.pol@gmail.com")
+                .memberId(1L)
+                .name("김정래")
+                .email("kkwjdfo@gmail.com")
                 .roles(List.of(MemberRoleType.TUTOR.getRole()))
                 .build()));
 
