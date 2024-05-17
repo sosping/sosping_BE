@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import sosping.be.domain.lesson.dto.LearnerJoinResponse;
 import sosping.be.domain.lesson.dto.LessonRegisterRequest;
 import sosping.be.domain.lesson.dto.LessonResponse;
 import sosping.be.domain.lesson.service.LessonService;
@@ -48,8 +49,8 @@ public class LessonController {
     // 수강생 들록
     @Operation(summary = "수강생 등록", description = "경로로 `lessonId`")
     @PostMapping("{lessonId}/learner")
-    public ResponseEntity<LessonResponse> joinLesson(@AuthenticationPrincipal Member member, @PathVariable Long lessonId) {
-        LessonResponse response = lessonService.joinLesson(member, lessonId);
+    public ResponseEntity<LearnerJoinResponse> joinLesson(@AuthenticationPrincipal Member member, @PathVariable Long lessonId) {
+        LearnerJoinResponse response = lessonService.joinLesson(member, lessonId);
 
         return ResponseEntity.ok(response);
     }
@@ -58,11 +59,11 @@ public class LessonController {
     @LogMonitoring
     @Operation(summary = "날짜 기반 강의 목록 조회")
     @GetMapping("{date}")
-    public ResponseEntity<List<LessonResponse>> getLessonList(@PathVariable(name = "date") String date) {
+    public ResponseEntity<List<LearnerJoinResponse>> getLessonList(@PathVariable(name = "date") String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
         LocalDate localDate = LocalDate.parse(date, formatter);
 
-        List<LessonResponse> responses = lessonService.findAllLessonByLocalDate(localDate);
+        List<LearnerJoinResponse> responses = lessonService.findAllLessonByLocalDate(localDate);
 
         return ResponseEntity.ok(responses);
     }

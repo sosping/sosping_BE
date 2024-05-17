@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sosping.be.domain.lesson.converter.LessonConverter;
 import sosping.be.domain.lesson.domain.Learner;
 import sosping.be.domain.lesson.domain.Lesson;
+import sosping.be.domain.lesson.dto.LearnerJoinResponse;
 import sosping.be.domain.lesson.dto.LessonResponse;
 import sosping.be.domain.lesson.repository.LearnerRepository;
 import sosping.be.domain.lesson.repository.LessonRepository;
@@ -46,7 +47,7 @@ public class LessonService {
     }
 
     @Transactional
-    public LessonResponse joinLesson(Member member, Long lessonId) {
+    public LearnerJoinResponse joinLesson(Member member, Long lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.STAGE_NOT_FOUND, HttpStatus.NOT_FOUND));
 
@@ -70,13 +71,16 @@ public class LessonService {
         lesson.increaseCount();
 
         learnerRepository.save(learner);
-        return LessonConverter.convert(lessonRepository.save(lesson));
+        LearnerJoinResponse response = new LearnerJoinResponse(LessonConverter.convert(lessonRepository.save(lesson)), lesson.getMember().getName());
+        return response;
     }
 
     @Transactional
-    public List<LessonResponse> findAllLessonByLocalDate(LocalDate localDate) {
-        List<LessonResponse> responses = lessonRepository.findLessonByLessonDateIs(localDate).stream()
-                .map(LessonConverter::convert)
+    public List<LearnerJoinResponse> findAllLessonByLocalDate(LocalDate localDate) {
+        List<LearnerJoinResponse> responses = lessonRepository.findLessonByLessonDateIs(localDate).stream()
+                .map(lesson -> {
+                    return new LearnerJoinResponse(LessonConverter.convert(lesson), lesson.getMember().getName());
+                })
                 .toList();
 
         return responses;
