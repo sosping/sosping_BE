@@ -4,17 +4,16 @@ import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.codequistify.master.domain.player.domain.Player;
-import org.codequistify.master.domain.player.domain.PlayerRoleType;
-import org.codequistify.master.domain.player.dto.PlayerProfile;
-import org.codequistify.master.global.aspect.LogExecutionTime;
-import org.codequistify.master.global.exception.ErrorCode;
-import org.codequistify.master.global.exception.domain.BusinessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import sosping.be.domain.member.domain.Member;
+import sosping.be.domain.member.domain.MemberRoleType;
+import sosping.be.global.aspect.LogExecutionTime;
+import sosping.be.global.exception.ErrorCode;
+import sosping.be.global.exception.domain.BusinessException;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +27,6 @@ public class TokenProvider {
     @Value("${jwt.secret}")
     private String JWT_SECRET = "";
     private Key KEY;
-    private final String ISS = "api.pol.or.kr";
     private final Long ACCESS_VALIDITY_TIME = 60 * 60 * 1000L;
     private final Long REFRESH_VALIDITY_TIME = 7 * 24 * 60 * 60 * 1000L;
     private final Logger LOGGER = LoggerFactory.getLogger(TokenProvider.class);
@@ -37,25 +35,25 @@ public class TokenProvider {
     protected void init() {
         KEY = new SecretKeySpec(JWT_SECRET.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
 
-        LOGGER.info("\n{}",generateAccessToken(Player.builder()
+        LOGGER.info("\n{}",generateAccessToken(Member.builder()
+                .memberId(0L)
                 .name("pol")
                 .email("kr.or.pol@gmail.com")
-                .roles(List.of(PlayerRoleType.SUPER_ADMIN.getRole()))
-                .uid("POL-BDBEej-Gj5AntZprZ")
+                .roles(List.of(MemberRoleType.TUTOR.getRole()))
                 .build()));
 
     }
 
-    public String generateAccessToken(PlayerProfile response) {
+
+    public String generateAccessToken(Member member) {
         Claims claims = Jwts.claims();
-        claims.put("role", response.roles());
+        claims.put("role", member.getRoles());
         Date now = new Date();
 
         String token = Jwts.builder()
                 .setClaims(claims)
-                .setAudience(response.uid())
+                .setAudience(member.getMemberId().toString())
                 .setIssuedAt(now)
-                .setIssuer(ISS)
                 .setExpiration(new Date(now.getTime() + ACCESS_VALIDITY_TIME))
                 .signWith(KEY)
                 .compact();
@@ -64,68 +62,15 @@ public class TokenProvider {
         return token;
     }
 
-    public String generateAccessToken(Player player) {
-        Claims claims = Jwts.claims();
-        claims.put("role", player.getRoles());
-        Date now = new Date();
 
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .setAudience(player.getUid())
-                .setIssuedAt(now)
-                .setIssuer(ISS)
-                .setExpiration(new Date(now.getTime() + ACCESS_VALIDITY_TIME))
-                .signWith(KEY)
-                .compact();
-
-        LOGGER.info("[generateAccessToken] {}", token);
-        return token;
-    }
-
-    public String generateTempToken(String email) {
-        Claims claims = Jwts.claims();
-        claims.put("role", List.of(PlayerRoleType.TEMPORARY));
-        Date now = new Date();
-
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .setAudience(email)
-                .setIssuedAt(now)
-                .setIssuer(ISS)
-                .setExpiration(new Date(now.getTime() + ACCESS_VALIDITY_TIME / 6))
-                .signWith(KEY)
-                .compact();
-
-        LOGGER.info("[generateTempToken] {}", token);
-        return token;
-    }
-
-    public String generateRefreshToken(PlayerProfile response) {
+    public String generateRefreshToken(Member member) {
         Claims claims = Jwts.claims();
         Date now = new Date();
 
         String token = Jwts.builder()
                 .setClaims(claims)
-                .setAudience(response.uid())
+                .setAudience(member.getMemberId().toString())
                 .setIssuedAt(now)
-                .setIssuer(ISS)
-                .setExpiration(new Date(now.getTime() + REFRESH_VALIDITY_TIME))
-                .signWith(KEY)
-                .compact();
-
-        LOGGER.info("[generateRefreshToken] {}", token);
-        return token;
-    }
-
-    public String generateRefreshToken(Player player) {
-        Claims claims = Jwts.claims();
-        Date now = new Date();
-
-        String token = Jwts.builder()
-                .setClaims(claims)
-                .setAudience(player.getUid())
-                .setIssuedAt(now)
-                .setIssuer(ISS)
                 .setExpiration(new Date(now.getTime() + REFRESH_VALIDITY_TIME))
                 .signWith(KEY)
                 .compact();

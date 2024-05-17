@@ -9,8 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import sosping.be.domain.member.service.MemberDetailsService;
 import sosping.be.global.exception.ErrorCode;
 import sosping.be.global.exception.domain.BusinessException;
 import sosping.be.global.jwt.TokenProvider;
@@ -23,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationTokenFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
-    private final PlayerDetailsService playerDetailsService;
+    private final MemberDetailsService memberDetailsService;
     private final Logger LOGGER = LoggerFactory.getLogger(AuthenticationTokenFilter.class);
 
     @Value("${host.develop.api.ant-match.uri}")
@@ -49,14 +53,12 @@ public class AuthenticationTokenFilter extends OncePerRequestFilter {
             throw new BusinessException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
         }
 
-
-        UserDetails userDetails = playerDetailsService.loadUserByUsername(aud);
+        UserDetails userDetails = memberDetailsService.loadUserByUsername(aud);
         UsernamePasswordAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        //response.setHeader("Authorization", token);
         filterChain.doFilter(request, response);
     }
 }

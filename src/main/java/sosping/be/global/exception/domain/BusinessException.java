@@ -1,8 +1,8 @@
 package sosping.be.global.exception.domain;
 
 import lombok.Getter;
-import org.codequistify.master.global.exception.ErrorCode;
 import org.springframework.http.HttpStatus;
+import sosping.be.global.exception.ErrorCode;
 
 @Getter
 public class BusinessException extends RuntimeException{

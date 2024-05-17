@@ -1,7 +1,7 @@
 package sosping.be.global.util;
 
-import org.codequistify.master.global.exception.domain.BusinessException;
 import org.springframework.http.ResponseEntity;
+import sosping.be.global.exception.domain.BusinessException;
 
 public record BasicResponse(
         String response,
