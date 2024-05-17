@@ -42,4 +42,16 @@ public interface BeachDataRepository extends JpaRepository<BeachData, Long> {
             "WHERE b.locationName = :locationName " +
             "GROUP BY b.beachName ")
     List<BeachNameDTO> findBeachNames(String locationName);
+
+    @Query("SELECT b " +
+            "FROM BeachData b " +
+            "WHERE b.locationName = :locationName " +
+            "AND b.beachName = :beachName " +
+            "AND b.date = :date " +
+            "AND b.time = :time")
+    BeachData findByLocationNameANDBeachNameAndTime(@Param("locationName") String locationName,
+                                                    @Param("beachName") String beachName,
+                                                    @Param("date") Date date,
+                                                    @Param("time") Time time);
+
 }

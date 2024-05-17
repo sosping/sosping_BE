@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sosping.be.domain.beach.domain.BeachData;
+import sosping.be.domain.beach.dto.BeachDataDescriptionDTO;
 import sosping.be.domain.beach.dto.BeachNameDTO;
 import sosping.be.domain.beach.dto.BeachRecommendationDTO;
 import sosping.be.domain.beach.service.BeachDataService;
@@ -80,4 +82,10 @@ public class BeachRecommenderController {
     }
 
     // 해안 기상 정보
+    @Operation(summary = "해안 기상 정보")
+    @GetMapping("location/{locationName}/beach/{beachName}/data")
+    public ResponseEntity<BeachDataDescriptionDTO> getBeachData(@PathVariable String locationName,
+                                                                @PathVariable String beachName) {
+        return ResponseEntity.ok(beachDataService.findBeachDateByLocationBeachName(locationName, beachName));
+    }
 }
