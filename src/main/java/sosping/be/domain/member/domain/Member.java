@@ -46,6 +46,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Column(name = "experience")
+    @Builder.Default
     private List<String> experiences = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
