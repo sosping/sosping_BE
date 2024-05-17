@@ -50,9 +50,11 @@ public class Member extends BaseTimeEntity implements UserDetails {
     private List<String> experiences = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Lesson> lessons= new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Learner> learners= new ArrayList<>();
 
     @Override
