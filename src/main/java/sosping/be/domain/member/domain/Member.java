@@ -33,6 +33,15 @@ public class Member extends BaseTimeEntity implements UserDetails {
 
     private String name;
 
+    @Column(name = "device_id")
+    private String deviceId;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
@@ -48,6 +57,15 @@ public class Member extends BaseTimeEntity implements UserDetails {
         return this.roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
+    }
+
+    public void updateLocation(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public void updateDeviceId(String deviceId) {
+        this.deviceId = deviceId;
     }
 
     public void updateRole(MemberRoleType memberRoleType) {
