@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>실시간 구조 정보</title>
+    <style>
+        .pulse {
+            position: absolute;
+            border: 10px solid rgba(255, 0, 0, 0.5);
+            border-radius: 50%;
+            height: 20px;
+            width: 20px;
+            animation: pulsate 1s ease-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes pulsate {
+            0% {
+                transform: scale(0.1, 0.1);
+                opacity: 0.0;
+            }
+            50% {
+                opacity: 1.0;
+            }
+            100% {
+                transform: scale(1.2, 1.2);
+                opacity: 0.0;
+            }
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxuVg8FfY1jx0ihgXdmCtbqfdzGFcEGSk"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.4.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<div id="map" style="height: 500px;"></div>
+
+<script>
+    var map;
+    var markers = [];
+    var overlays = [];
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 37.5665, lng: 126.9780 },
+            zoom: 12
+        });
+    }
+
+    function connect() {
+        var socket = new SockJS('/ws');
+        var stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/locations', function (message) {
+                var helpMessage = JSON.parse(message.body);
+                showHelpLocation(helpMessage);
+            });
+        });
+    }
+
+    function showHelpLocation(helpMessage) {
+        var position = { lat: helpMessage.latitude, lng: helpMessage.longitude };
+
+        var marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: 'Help Needed'
+        });
+
+        // 마커 클릭 이벤트 리스너 추가
+        marker.addListener('click', function() {
+            confirmRemoveMarker(marker, pulseMarker);
+        });
+
+        markers.push(marker);
+
+        // 마커 위치로 지도 중심 이동
+        map.setCenter(marker.getPosition());
+
+        // 박동 효과 추가
+        var pulseMarker = addPulseEffect(position);
+        marker.pulseMarker = pulseMarker;  // 마커에 pulseMarker 연결
+    }
+
+    function confirmRemoveMarker(marker) {
+        if (confirm('마커를 제거하시겠습니까?')) {
+            removeMarker(marker);
+        }
+    }
+
+    function removeMarker(marker) {
+        var index = markers.indexOf(marker);
+        if (index > -1) {
+            marker.setMap(null);
+            markers.splice(index, 1);
+
+            // 마커의 박동 이펙트도 제거
+            if (marker.pulseMarker) {
+                marker.pulseMarker.setMap(null);
+                var pulseIndex = markers.indexOf(marker.pulseMarker);
+                if (pulseIndex > -1) {
+                    markers.splice(pulseIndex, 1);
+                }
+            }
+        }
+    }
+
+    function addPulseEffect(position) {
+        var pulseMarker = new google.maps.Marker({
+            position: position,
+            map: map,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 0,
+                fillColor: 'rgba(255, 0, 0, 0.5)',
+                fillOpacity: 1,
+                strokeWeight: 0
+            },
+            zIndex: 1
+        });
+
+        var pulseAnimation = function() {
+            var icon = pulseMarker.getIcon();
+            var scale = 0;
+            var opacity = 1;
+
+            pulseMarker.pulseAnimation = setInterval(function() {
+                scale += 0.75;
+                opacity -= 0.02;
+
+                icon.scale = scale;
+                icon.fillOpacity = opacity;
+
+                pulseMarker.setIcon(icon);
+
+                if (opacity <= 0) {
+                    clearInterval(pulseMarker.pulseAnimation);
+                    icon.scale = 0;
+                    icon.fillOpacity = 1;
+                    pulseMarker.setIcon(icon);
+                    setTimeout(pulseAnimation, 500);
+                }
+            }, 30);
+        };
+
+        pulseAnimation();
+        markers.push(pulseMarker);
+        return pulseMarker;
+    }
+
+    window.onload = function() {
+        initMap();
+        connect();
+    };
+</script>
+</body>
+</html>

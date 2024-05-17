@@ -39,7 +39,7 @@ public class SecurityConfig {
                 // 폼 로그인 비활성화
                 .formLogin(form -> form.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/home/**", "/index/**", "/index.js", "/favicon.ico", "/swagger-ui/**", "/v3/**", "/api/todo-list/**").permitAll()
+                        .requestMatchers("/home/**", "/index/**", "/index.js", "/favicon.ico", "/swagger-ui/**", "/v3/**", "/api/todo-list/**", "/ws/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated())
 
