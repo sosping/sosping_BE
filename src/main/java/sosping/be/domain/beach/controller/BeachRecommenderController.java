@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sosping.be.domain.beach.dto.BeachNameDTO;
 import sosping.be.domain.beach.dto.BeachRecommendationDTO;
 import sosping.be.domain.beach.service.BeachDataService;
 import sosping.be.global.aspect.LogMonitoring;
@@ -61,4 +62,22 @@ public class BeachRecommenderController {
         return ResponseEntity.ok(recommendationDTOS);
     }
 
+
+    // 해변 목록
+    @Operation(summary = "지역 목록")
+    @GetMapping("/locations")
+    public ResponseEntity<List<String>> getBeachLocationNames() {
+        return ResponseEntity.ok(beachDataService.findBeachLocationNames());
+
+    }
+
+    // 해변별 해안
+    @Operation(summary = "지역별 해안")
+    @GetMapping("/locations/{locationName}/beach")
+    public ResponseEntity<List<BeachNameDTO>> getBeachNames(@PathVariable(value = "locationName") String locationName) {
+        return ResponseEntity.ok(beachDataService.findBeachNames(locationName));
+
+    }
+
+    // 해안 기상 정보
 }

@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sosping.be.domain.beach.domain.BeachData;
 import sosping.be.domain.beach.domain.RecommendationLevel;
+import sosping.be.domain.beach.dto.BeachNameDTO;
 import sosping.be.domain.beach.dto.BeachRecommendationDTO;
+import sosping.be.domain.beach.repository.BeachDataRepository;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BeachDataService {
     private final BeachRecommender beachRecommender;
+    private final BeachDataRepository beachDataRepository;
 
     public List<BeachRecommendationDTO> recommendBeachToday() {
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -44,5 +47,13 @@ public class BeachDataService {
                 .toList();
 
         return beachRecommendationDTOList;
+    }
+
+    public List<String> findBeachLocationNames() {
+        return beachDataRepository.findLocationName();
+    }
+
+    public List<BeachNameDTO> findBeachNames(String locationName) {
+        return beachDataRepository.findBeachNames(locationName);
     }
 }

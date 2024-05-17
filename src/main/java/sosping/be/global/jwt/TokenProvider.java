@@ -27,7 +27,7 @@ public class TokenProvider {
     @Value("${jwt.secret}")
     private String JWT_SECRET = "";
     private Key KEY;
-    private final Long ACCESS_VALIDITY_TIME = 60 * 60 * 1000L;
+    private final Long ACCESS_VALIDITY_TIME = 2 * 60 * 60 * 1000L;
     private final Long REFRESH_VALIDITY_TIME = 7 * 24 * 60 * 60 * 1000L;
     private final Logger LOGGER = LoggerFactory.getLogger(TokenProvider.class);
 

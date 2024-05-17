@@ -5,6 +5,7 @@ import sosping.be.domain.beach.domain.BeachData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import sosping.be.domain.beach.dto.BeachNameDTO;
 
 import java.sql.Date;
 import java.sql.Time;
@@ -30,4 +31,15 @@ public interface BeachDataRepository extends JpaRepository<BeachData, Long> {
             @Param("maxWindSpeed") Double maxWindSpeed,
             Pageable pageable
     );
+
+    @Query("SELECT b.locationName " +
+            "FROM BeachData b " +
+            "GROUP BY b.locationName ")
+    List<String > findLocationName();
+
+    @Query("SELECT new sosping.be.domain.beach.dto.BeachNameDTO(b.locationName, b.beachName) " +
+            "FROM BeachData b " +
+            "WHERE b.locationName = :locationName " +
+            "GROUP BY b.beachName ")
+    List<BeachNameDTO> findBeachNames(String locationName);
 }
