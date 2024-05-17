@@ -18,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "SELECT m FROM Member m WHERE " +
             "(6371 * acos(cos(radians(:latitude)) * cos(radians(m.latitude)) * cos(radians(m.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(m.latitude)))) < 1")
     List<Member> findMembersWithinDistance(@Param("latitude") Double latitude, @Param("longitude") Double longitude);
+
+    Optional<Member> findByName(String name);
 }

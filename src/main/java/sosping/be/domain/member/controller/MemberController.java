@@ -12,6 +12,8 @@ import sosping.be.domain.member.service.MemberService;
 import sosping.be.global.aspect.LogMonitoring;
 import sosping.be.global.util.BasicResponse;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Member")
@@ -46,5 +48,13 @@ public class MemberController {
                                                        @RequestParam String experience) {
         memberService.addExperience(member, experience);
         return ResponseEntity.ok(BasicResponse.of("SUCCESS"));
+    }
+
+    @LogMonitoring
+    @Operation(summary = "경력 조회", description = "사용자의 이름으로 경력을 조회합니다.")
+    @GetMapping("{name}/experience")
+    public ResponseEntity<List<String>> getExperiencesByName(@PathVariable String name) {
+        List<String> experiences = memberService.getExperiencesByName(name);
+        return ResponseEntity.ok(experiences);
     }
 }

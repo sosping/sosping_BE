@@ -10,10 +10,19 @@ import sosping.be.domain.member.repository.MemberRepository;
 import sosping.be.global.exception.ErrorCode;
 import sosping.be.global.exception.domain.BusinessException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+
+    @Transactional(readOnly = true)
+    public List<String> getExperiencesByName(String name) {
+        Member member = memberRepository.findByName(name)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PLAYER_NOT_FOUND, HttpStatus.NOT_FOUND));
+        return member.getExperiences();
+    }
 
     @Transactional
     public void addTutorRole(Long memberId) {
