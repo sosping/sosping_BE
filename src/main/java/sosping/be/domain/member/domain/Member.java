@@ -45,7 +45,7 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Builder.Default
     private List<String> roles = new ArrayList<>();
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "experience")
     @Builder.Default
     private List<String> experiences = new ArrayList<>();
